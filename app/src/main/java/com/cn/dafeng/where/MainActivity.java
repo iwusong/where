@@ -12,9 +12,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Button but = findViewById(R.id.button);
-//        but.setOnClickListener(
-//                view ->
-        startActivity(new Intent(this, WsWebview.class));
-//        );
+        but.setOnClickListener(
+                view ->
+                        startActivity(new Intent(this, WsWebview.class))
+        );
     }
 }

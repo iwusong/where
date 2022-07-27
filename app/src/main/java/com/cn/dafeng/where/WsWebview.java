@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.webkit.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,18 +18,17 @@ import java.net.URLConnection;
 
 public class WsWebview extends AppCompatActivity {
 
+    private static final String TAG = "WsWebview";
+    private WebView webView;
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         WebView.setWebContentsDebuggingEnabled(true);
-        final WebView webView = new WebView(this);
+        webView = new WebView(this);
         setContentView(webView);
-        try {
-            System.out.println(getJs());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         webView.setWebViewClient(
                 new WebViewClient() {
@@ -58,7 +58,6 @@ public class WsWebview extends AppCompatActivity {
                                 return super.shouldInterceptRequest(view, request);
                             }
                             if (!result.equals("")) {
-                                Log.d("shouldInterceptRequest: ", result);
                                 return new WebResourceResponse("text/html", "UTF-8", new ByteArrayInputStream(result.getBytes()));
 
                             }
@@ -91,5 +90,17 @@ public class WsWebview extends AppCompatActivity {
             stringBuilder.append((char) c);
         }
         return String.valueOf(stringBuilder);
+    }
+
+    // 重写方法，防止点击返回按钮直接退回上一活动页面
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
+            // 返回上个页面
+            webView.goBack();
+            return true;
+        }
+        finish();
+        return super.onKeyDown(keyCode, event);
     }
 }
