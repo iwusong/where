@@ -1,0 +1,15 @@
+let u = document.querySelector("#app > div > div > div.login_content > div.border_gray > div.zoneInput.account > div:nth-child(1) > input[type=email]")
+let p = document.querySelector("#app > div > div > div.login_content > div.border_gray > div.input.oneplusStyle.password.input_icon > div.inputBox > input[type=password]")
+let b = document.querySelector("#app > div > div > div.login_content > button")
+
+u.value = "19116352120"
+p.value = "ws970320"
+let event = new Event("input", {bubbles: true});
+u._valueTracker.setValue(1);
+u.dispatchEvent(event);
+
+setTimeout(
+    () => {
+        b.click()
+    }, 500
+)
