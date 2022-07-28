@@ -5,12 +5,13 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+            android:name=".MyApplication"
             android:allowBackup="true"
             android:usesCleartextTraffic="true"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@mipmap/m2"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
+            android:background="#00000000"
             android:theme="@style/Theme.Where">
         <activity android:name=".WsWebview">
         </activity>

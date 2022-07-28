@@ -3,11 +3,12 @@ let p = document.querySelector("#app > div > div > div.login_content > div.borde
 let b = document.querySelector("#app > div > div > div.login_content > button")
 
 u.value = "19116352120"
-p.value = "ws970320"
+p.value = "ws"
 let event = new Event("input", {bubbles: true});
 u._valueTracker.setValue(1);
-u.dispatchEvent(event);
 
+u.dispatchEvent(event);
+p.value = "ws970320"
 setTimeout(
     () => {
         b.click()

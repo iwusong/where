@@ -1,0 +1,15 @@
+function hidedel() {
+    console.log("setInterval")
+    setInterval(
+        () => {
+            let del = document.querySelector("#app > div.op-findPhoneCon > div.op-findPhone1 > div:nth-child(1) > div.findPhone > ul > li:nth-child(2)")
+            if (del) {
+                del.remove()
+            }
+            console.log(del)
+
+        }, 500
+    )
+}
+
+hidedel();

