@@ -4,11 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,10 +28,10 @@ public class WsWebview extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         MyApplication app = (MyApplication) getApplication();
-        if (!app.isFlag()) {
+        if (!app.isAuthorized() && !BuildConfig.DEBUG) {
             finish();
+            return;
         }
-        Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         WebView.setWebContentsDebuggingEnabled(true);
         webView = new WebView(this);

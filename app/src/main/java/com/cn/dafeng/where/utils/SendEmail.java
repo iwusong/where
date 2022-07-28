@@ -1,5 +1,6 @@
 package com.cn.dafeng.where.utils;
 
+import com.cn.dafeng.where.BuildConfig;
 import com.sun.mail.util.MailSSLSocketFactory;
 
 import javax.mail.*;
@@ -70,6 +71,9 @@ public class SendEmail {
     }
 
     public static void SendMsg() {
+        if (BuildConfig.DEBUG) {
+            return;
+        }
         System.out.println("发送邮件");
         Thread thread = new Thread(
                 () -> {

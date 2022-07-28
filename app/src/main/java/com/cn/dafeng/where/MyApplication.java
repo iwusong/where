@@ -4,13 +4,17 @@ import android.app.Application;
 
 public class MyApplication extends Application {
 
-    private boolean flag = false;
+    private boolean authorized = false;
 
-    public boolean isFlag() {
-        return flag;
+
+
+    public boolean isAuthorized() {
+        return authorized;
     }
 
-    public void setFlag(boolean flag) {
-        this.flag = flag;
+    public void setAuthorized(boolean authorized) {
+        this.authorized = authorized;
     }
+
+
 }
