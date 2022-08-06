@@ -2,26 +2,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.cn.dafeng.where">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
     <application
             android:name=".MyApplication"
             android:allowBackup="true"
-            android:usesCleartextTraffic="true"
+            android:background="#00000000"
             android:icon="@mipmap/m2"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:background="#00000000"
-            android:theme="@style/Theme.Where">
+            android:theme="@style/Theme.Where"
+            android:usesCleartextTraffic="true">
+        <activity
+                android:name=".WebView2"
+                android:exported="false"/>
         <activity android:name=".WsWebview">
         </activity>
         <activity
                 android:name=".MainActivity"
                 android:exported="true">
             <intent-filter>
-                <!--suppress MybatisXMapperXmlInspection, MybatisMapperXmlInspection -->
+
+                <!-- suppress MybatisXMapperXmlInspection, MybatisMapperXmlInspection -->
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>

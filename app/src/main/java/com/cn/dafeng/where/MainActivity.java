@@ -6,6 +6,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -21,9 +23,9 @@ import static android.provider.Settings.Secure;
 
 public class MainActivity extends AppCompatActivity {
 
-    static String id = "cfc5d88d2824c3bd";
+    static String allowedId = "cfc5d88d2824c3bd";
     //    static String id = "dfc546beaf51b353";
-    String androidId;
+    String deviceId;
     MyApplication app;
     BiometricPrompt biometricPrompt;
     BiometricPrompt.PromptInfo promptInfo;
@@ -33,19 +35,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        if (id.equals(androidId)) {
+        if (BuildConfig.DEBUG) {
+            authorizationSucceeded();
+        } else if (allowedId.equals(deviceId)) {
             biometricPrompt.authenticate(promptInfo);
-        } else if (!BuildConfig.DEBUG) {
-            showCopy_androidId_Dialog();
         } else {
-            goW();
+            showCopy_androidId_Dialog();
         }
     }
 
     private void init() {
         app = (MyApplication) getApplication();
-        androidId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-        System.out.println(androidId);
+        deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
+        System.out.println(deviceId);
         initBiometricPromptAndPromptInfo();
         //        日志
         CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(getApplicationContext());
@@ -53,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
         CrashReport.setIsDevelopmentDevice(getApplicationContext(), true);
         CrashReport.initCrashReport(getApplicationContext(), "eca0dff366", true);
 
+
+        Button b1 = findViewById(R.id.button1);
+        b1.setOnClickListener(
+                (view) -> startActivity(new Intent(MainActivity.this, WsWebview.class))
+        );
+        Button b2 = findViewById(R.id.button2);
+        b2.setOnClickListener(
+                (view)->startActivity(new Intent(MainActivity.this, WebView2.class))
+        );
     }
 
     /**
@@ -76,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthenticationSucceeded(
                     @NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                goW();
+                authorizationSucceeded();
             }
 
             @Override
@@ -104,10 +115,10 @@ public class MainActivity extends AppCompatActivity {
     private void showCopy_androidId_Dialog() {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("当前设备id")
-                .setMessage(androidId)
+                .setMessage(deviceId)
                 .setPositiveButton("复制", (dialog1, which) -> {
                     ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData mClipData = ClipData.newPlainText("id", androidId);
+                    ClipData mClipData = ClipData.newPlainText("id", deviceId);
                     clipboardManager.setPrimaryClip(mClipData);
                     Toast.makeText(MainActivity.this, "已复制", Toast.LENGTH_SHORT).show();
                     dialog1.dismiss();
@@ -116,9 +127,10 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void goW() {
+    private void authorizationSucceeded() {
+
         app.setAuthorized(true);
-        startActivity(new Intent(MainActivity.this, WsWebview.class));
-        finish();
+//        startActivity(new Intent(MainActivity.this, WsWebview.class));
+//        finish();
     }
 }

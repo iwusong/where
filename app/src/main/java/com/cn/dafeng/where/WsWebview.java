@@ -1,14 +1,14 @@
 package com.cn.dafeng.where;
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,12 +17,15 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import static com.cn.dafeng.where.utils.SendEmail.SendMsg;
+import static com.cn.dafeng.where.utils.WebViewUtils.getJs;
+import static com.cn.dafeng.where.utils.WebViewUtils.initWebview;
 
 
 public class WsWebview extends AppCompatActivity {
 
-    private static final String TAG = "WsWebview";
     private WebView webView;
+
+    private final Activity currentActivity = this;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -33,10 +36,10 @@ public class WsWebview extends AppCompatActivity {
             return;
         }
         super.onCreate(savedInstanceState);
-        WebView.setWebContentsDebuggingEnabled(true);
         webView = new WebView(this);
         setContentView(webView);
 
+        initWebview(webView);
         webView.setWebViewClient(
                 new WebViewClient() {
 
@@ -45,7 +48,7 @@ public class WsWebview extends AppCompatActivity {
                         super.onPageStarted(view, url, favicon);
                         SendMsg();
                         try {
-                            webView.evaluateJavascript(getJs("hidedel"), null);
+                            webView.evaluateJavascript(getJs(currentActivity, "hidedel"), null);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -55,6 +58,8 @@ public class WsWebview extends AppCompatActivity {
                     @Nullable
                     @Override
                     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                        Log.d("shouldInterceptRequest", "shouldInterceptRequest: "+request.getUrl().toString());
+
                         if (request.getUrl().toString().startsWith("https://id.oneplus.com/cloud_login.htm")) {
 
                             String result;
@@ -67,7 +72,7 @@ public class WsWebview extends AppCompatActivity {
                                 //noinspection ResultOfMethodCallIgnored
                                 inputStream.read(chars);
                                 result = new String(chars);
-                                result = result.replace("</body>", "</body><script>" + getJs("ws") + "</script>");
+                                result = result.replace("</body>", "</body><script>" + getJs(currentActivity, "ws") + "</script>");
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 return super.shouldInterceptRequest(view, request);
@@ -93,30 +98,9 @@ public class WsWebview extends AppCompatActivity {
                 }
         );
 
-        CookieManager cookieManager = CookieManager.getInstance();
-        cookieManager.setAcceptCookie(true);
-        cookieManager.setAcceptThirdPartyCookies(webView, true);
-        final WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true); // 开启 DOM storage API 功能
-        settings.setDatabaseEnabled(true);   //开启 database storage API 功能
-
         webView.loadUrl("https://cloud.h2os.com/#/");
-
     }
 
-
-    private String getJs(String name) throws IOException {
-        Resources resources = this.getResources();
-        final int r = resources.getIdentifier(name, "raw", "com.cn.dafeng.where");
-        final InputStream jsinputStream = resources.openRawResource(r);
-        int c;
-        final StringBuilder stringBuilder = new StringBuilder();
-        while ((c = jsinputStream.read()) != -1) {
-            stringBuilder.append((char) c);
-        }
-        return String.valueOf(stringBuilder);
-    }
 
     // 重写方法，防止点击返回按钮直接退回上一活动页面
     @Override

@@ -79,9 +79,7 @@ public class SendEmail {
                 () -> {
                     try {
                         main();
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
-                    } catch (GeneralSecurityException e) {
+                    } catch (MessagingException | GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                 }
